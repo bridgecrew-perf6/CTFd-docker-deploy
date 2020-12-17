@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ctfd
+  labels:
+    app: ctfd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ctfd
+  template:
+    metadata:
+      name: ctfd
+      labels:
+        app: ctfd
+    spec:
+      containers:
+      - name: ctfd
+        image: ctfd/ctfd:3.2.0 # ctfd/ctfd:dependabot_npm_and_yarn_ini-1.3.7
+        ports:
+        - containerPort: 8000
+          name: ctfd
+        env:
+        - name: DATABASE_URL
+          value: "mysql+pymysql://root:YOUR_PASSWORD@mysql:3306/ctfd"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ctfd
+  labels:
+    app: ctfd
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+    nodePort: 30000
+    name: ctfd
+  selector:
+    app: ctfd
